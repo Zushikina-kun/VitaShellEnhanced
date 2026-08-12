@@ -98,8 +98,9 @@ int launchAppByUriExit(const char *titleid);
 
 char *strcasestr(const char *haystack, const char *needle);
 
-int vshIoUmount(int id, int a2, int a3, int a4);
-int _vshIoMount(int id, const char *path, int permission, void *buf);
+/* vshIoUmount and _vshIoMount are now declared in <psp2/vshbridge.h> with
+   updated signatures. We only keep vshIoMount (the 6-arg wrapper) here
+   since it is not part of the SDK header. */
 int vshIoMount(int id, const char *path, int permission, int a4, int a5, int a6);
 
 void remount(int id);

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.10)
 
 # VitaSDK defines
 if( NOT DEFINED CMAKE_TOOLCHAIN_FILE )
@@ -148,10 +148,13 @@ add_executable(VitaShell
 )
 
 add_dependencies(VitaShell vitashell_user_stubs)
-add_dependencies(VitaShell kernel.skprx)
-add_dependencies(VitaShell user.suprx)
-add_dependencies(VitaShell patch.skprx)
-add_dependencies(VitaShell usbdevice.skprx)
+# vita_create_self() on CMake >= 3.20 appends "-self" to the target name.
+# CMake < 3.20 used the bare name (kernel.skprx). We use the new names
+# since the VitaSDK Docker image ships CMake 4.x.
+add_dependencies(VitaShell kernel.skprx-self)
+add_dependencies(VitaShell user.suprx-self)
+add_dependencies(VitaShell patch.skprx-self)
+add_dependencies(VitaShell usbdevice.skprx-self)
 
 target_link_libraries(VitaShell
   ${CMAKE_CURRENT_BINARY_DIR}/modules/user/libVitaShellUser_stub_weak.a
@@ -170,6 +173,7 @@ target_link_libraries(VitaShell
   archive
   bz2
   lzma
+  zstd
   crypto
   expat
   taihen_stub

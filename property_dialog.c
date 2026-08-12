@@ -103,7 +103,7 @@ typedef struct {
 SceUID info_thid = -1;
 int info_done = 0;
 
-static int propertyCancelHandler() {
+static int propertyCancelHandler(const char *path) {
   return info_done;
 }
 

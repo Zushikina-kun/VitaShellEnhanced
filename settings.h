@@ -54,7 +54,7 @@ typedef struct {
 typedef struct {
   int name;
   int type;
-  int (* callback)();
+  int (* callback)(void *option);
   char *string;
   int size_string;
   char **options;

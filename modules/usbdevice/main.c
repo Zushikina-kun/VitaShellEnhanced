@@ -25,6 +25,31 @@
 
 #include <taihen.h>
 
+/*
+  GCC 15 changed how empty-parameter-list function pointer calls are handled.
+  TAI_CONTINUE casts hook->old / hook->func to "type(*)()" — a function with
+  no parameters — then calls it with arguments, which is now a hard error.
+  We define typed wrapper macros for the two hook signatures used in this file
+  to avoid the cast entirely.
+*/
+#define TAI_CONTINUE_OPEN(hook, file, flags, mode) ({ \
+  struct _tai_hook_user *cur, *next; \
+  cur = (struct _tai_hook_user *)(hook); \
+  next = (struct _tai_hook_user *)cur->next; \
+  (next == NULL) \
+    ? ((SceUID(*)(const char*, int, SceMode))cur->old)((file), (flags), (mode)) \
+    : ((SceUID(*)(const char*, int, SceMode))next->func)((file), (flags), (mode)); \
+})
+
+#define TAI_CONTINUE_READ(hook, fd, data, size) ({ \
+  struct _tai_hook_user *cur, *next; \
+  cur = (struct _tai_hook_user *)(hook); \
+  next = (struct _tai_hook_user *)cur->next; \
+  (next == NULL) \
+    ? ((int(*)(SceUID, void*, SceSize))cur->old)((fd), (data), (size)) \
+    : ((int(*)(SceUID, void*, SceSize))next->func)((fd), (data), (size)); \
+})
+
 static tai_hook_ref_t ksceIoOpenRef;
 static tai_hook_ref_t ksceIoReadRef;
 
@@ -35,16 +60,16 @@ static int first = 1;
 static SceUID ksceIoOpenPatched(const char *file, int flags, SceMode mode) {
   first = 1;
 
-  SceUID fd = TAI_CONTINUE(SceUID, ksceIoOpenRef, file, flags, mode);
+  SceUID fd = TAI_CONTINUE_OPEN(ksceIoOpenRef, file, flags, mode);
 
   if (fd == 0x800F090D)
-    return TAI_CONTINUE(SceUID, ksceIoOpenRef, file, flags & ~SCE_O_WRONLY, mode);
+    return TAI_CONTINUE_OPEN(ksceIoOpenRef, file, flags & ~SCE_O_WRONLY, mode);
 
   return fd;
 }
 
 static int ksceIoReadPatched(SceUID fd, void *data, SceSize size) {
-  int res = TAI_CONTINUE(int, ksceIoReadRef, fd, data, size);
+  int res = TAI_CONTINUE_READ(ksceIoReadRef, fd, data, size);
 
   if (first) {
     first = 0;
