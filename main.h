@@ -58,14 +58,14 @@
 
 #define VITASHELL_VERSION ((VITASHELL_VERSION_MAJOR << 0x18) | (VITASHELL_VERSION_MINOR << 0x10))
 
-#define VITASHELL_LASTDIR "ux0:VitaShell/internal/lastdir.txt"
+#define VITASHELL_LASTDIR "ux0:VitaShellEnhanced/internal/lastdir.txt"
 
 // needs / at the end
-#define VITASHELL_BOOKMARKS_PATH "ux0:VitaShell/bookmarks/"
-#define VITASHELL_RECENT_PATH "ux0:VitaShell/recent/"
+#define VITASHELL_BOOKMARKS_PATH "ux0:VitaShellEnhanced/bookmarks/"
+#define VITASHELL_RECENT_PATH "ux0:VitaShellEnhanced/recent/"
 #define VITASHELL_RECENT_PATH_DELETE_INTERVAL_DAYS 14
 
-#define VITASHELL_TITLEID "VITASHELL"
+#define VITASHELL_TITLEID "VSHELLENH"
 
 #define ALIGN(x, align) (((x) + ((align) - 1)) & ~((align) - 1))
 

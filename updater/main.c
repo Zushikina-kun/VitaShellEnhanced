@@ -68,12 +68,12 @@ static int loadScePaf() {
   buf[2] = -1;
   buf[3] = -1;
 
-  return sceSysmoduleLoadModuleInternalWithArg(SCE_SYSMODULE_INTERNAL_PAF, sizeof(argp), argp, buf);
+  return sceSysmoduleLoadModuleInternalWithArg(SCE_SYSMODULE_INTERNAL_PAF, sizeof(argp), argp, (const SceSysmoduleOpt *)buf);
 }
 
 static int unloadScePaf() {
   uint32_t buf = 0;
-  return sceSysmoduleUnloadModuleInternalWithArg(SCE_SYSMODULE_INTERNAL_PAF, 0, NULL, &buf);
+  return sceSysmoduleUnloadModuleInternalWithArg(SCE_SYSMODULE_INTERNAL_PAF, 0, NULL, (const SceSysmoduleOpt *)&buf);
 }
 
 int promoteApp(const char *path) {
@@ -160,11 +160,11 @@ int main(int argc, const char *argv[]) {
   sceAppMgrDestroyOtherApp();
 
   char *titleid = get_title_id(PACKAGE_DIR "/sce_sys/param.sfo");
-  if (titleid && strcmp(titleid, "VITASHELL") == 0) {
+  if (titleid && strcmp(titleid, "VSHELLENH") == 0) {
     promoteApp(PACKAGE_DIR);
   }
 
-  launchAppByUriExit("VITASHELL");
+  launchAppByUriExit("VSHELLENH");
 
   return 0;
 }

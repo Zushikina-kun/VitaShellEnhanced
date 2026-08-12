@@ -27,10 +27,15 @@
 #include "language.h"
 #include "utils.h"
 
-#define BASE_ADDRESS "https://raw.githubusercontent.com/TheOfficialFloW/VitaShell/master/release"
+/* Auto-update is disabled for VitaShell Enhanced — this fork has its own
+   release channel at https://github.com/Zushikina-kun/VitaShellEnhanced.
+   The BASE_ADDRESS below points to our fork's releases. The update mechanism
+   itself is inherited from VitaShell; the URL and file paths are updated to
+   use the Enhanced title ID and data directory. */
+#define BASE_ADDRESS "https://github.com/Zushikina-kun/VitaShellEnhanced/releases/latest/download"
 #define VERSION_URL "/version.bin"
-#define VITASHELL_UPDATE_FILE "ux0:VitaShell/internal/VitaShell.vpk"
-#define VITASHELL_VERSION_FILE "ux0:VitaShell/internal/version.bin"
+#define VITASHELL_UPDATE_FILE "ux0:VitaShellEnhanced/internal/VitaShellEnhanced.vpk"
+#define VITASHELL_VERSION_FILE "ux0:VitaShellEnhanced/internal/version.bin"
 
 extern unsigned char _binary_resources_updater_eboot_bin_start;
 extern unsigned char _binary_resources_updater_eboot_bin_size;
@@ -76,7 +81,7 @@ int network_update_thread(SceSize args, void *argp) {
         }
 
         // Yes
-        return downloadFileProcess(BASE_ADDRESS "/VitaShell.vpk", VITASHELL_UPDATE_FILE, DIALOG_STEP_DOWNLOADED);
+        return downloadFileProcess(BASE_ADDRESS "/VitaShellEnhanced.vpk", VITASHELL_UPDATE_FILE, DIALOG_STEP_DOWNLOADED);
       }
     }
   }

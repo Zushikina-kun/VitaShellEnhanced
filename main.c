@@ -100,7 +100,7 @@ void drawShellInfo(const char *path) {
   if (version[3] == '0')
     version[3] = '\0';
 
-  pgf_draw_textf(SHELL_MARGIN_X, SHELL_MARGIN_Y, TITLE_COLOR, "VitaShell %s", version);
+  pgf_draw_textf(SHELL_MARGIN_X, SHELL_MARGIN_Y, TITLE_COLOR, "VitaShell Enhanced %s", version);
 
   // Status bar
   float x = SCREEN_WIDTH - SHELL_MARGIN_X;
@@ -237,7 +237,7 @@ void initUsb() {
   if (!path)
     return;
 
-  usbdevice_modid = startUsb("ux0:VitaShell/module/usbdevice.skprx", path, SCE_USBSTOR_VSTOR_TYPE_FAT);
+  usbdevice_modid = startUsb("ux0:VitaShellEnhanced/module/usbdevice.skprx", path, SCE_USBSTOR_VSTOR_TYPE_FAT);
   if (usbdevice_modid >= 0) {
     // Lock power timers
     powerLock();
@@ -925,7 +925,7 @@ int dialogSteps() {
     
     case DIALOG_STEP_EXTRACTED:
     {
-			removePath("ux0:patch/VITASHELL", NULL);
+			removePath("ux0:patch/VSHELLENH", NULL);
       launchAppByUriExit("VSUPDATER");
       setDialogStep(DIALOG_STEP_NONE);
       break;
