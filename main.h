@@ -150,7 +150,11 @@
 #define MAX_QR_LENGTH 1024
 #define MAX_POSITION 16
 #define MAX_ENTRIES 17
-#define MAX_URL_LENGTH 128
+/* MAX_URL_LENGTH: raised from 128 to 1024.
+   The original 128-byte limit silently truncated modern GitHub release URLs
+   and other long homebrew distribution URLs.  QR_MAX_URL_LENGTH in qr.h
+   mirrors this value for the QR download path buffers. */
+#define MAX_URL_LENGTH 1024
 
 #define BIG_BUFFER_SIZE 16 * 1024 * 1024
 

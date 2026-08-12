@@ -25,6 +25,14 @@
 #ifndef __NETWORK_DOWNLOAD_H__
 #define __NETWORK_DOWNLOAD_H__
 
+/*
+  getDownloadInfo: combined single-request replacement for the original
+  two-request pattern (getDownloadFileSize + getFieldFromHeader).
+  See network_download.c for full documentation.
+*/
+int getDownloadInfo(const char *src, uint64_t *size,
+                    char *content_disp, int content_disp_len);
+
 int getDownloadFileSize(const char *src, uint64_t *size);
 int getFieldFromHeader(const char *src, const char *field, const char **data, unsigned int *valueLen);
 int downloadFile(const char *src, const char *dst, FileProcessParam *param);

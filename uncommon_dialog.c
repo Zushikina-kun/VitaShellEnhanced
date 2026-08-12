@@ -373,6 +373,9 @@ int drawUncommonDialog() {
     }
     
     if (uncommon_dialog.mode == MSG_DIALOG_MODE_QR_SCAN) {
+      /* renderCameraQR reads the camera frame, draws it, draws the overlay,
+         and feeds a grayscale copy to the decode thread.
+         Must be called exactly once per render frame. */
       renderCameraQR(uncommon_dialog.x + 15, string_y + 10);
       string_y += CAM_HEIGHT;
     }

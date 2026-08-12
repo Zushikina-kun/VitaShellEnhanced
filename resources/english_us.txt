@@ -194,6 +194,8 @@ QR_OPEN_WEBSITE                      = "Do you want to open this URL:\%s"
 QR_SHOW_CONTENTS                     = "QR Code Says:\%s"
 QR_CONFIRM_INSTALL                   = "Do you want to install this package:\%s\File: %s\Size: %s"
 QR_CONFIRM_DOWNLOAD                  = "Do you want to download this file:\%s\File: %s\Size: %s"
+QR_NO_CAMERA                         = "Camera unavailable.\QR scanning requires the front camera."
+QR_URL_TOO_LONG                      = "The scanned URL is too long to process."
 
 # Adhoc strings
 ADHOC_RECEIVE_SEARCHING_PSVITA       = "Searching for a PS Vita to receive from...\Please wait."

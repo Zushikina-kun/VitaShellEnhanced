@@ -28,6 +28,97 @@
 
 #define VITASHELL_USER_AGENT "VitaShell/1.00 libhttp/1.1"
 
+/*
+  getDownloadInfo:
+  Combines what was previously two separate HTTP requests in qr_scan_thread
+  (getDownloadFileSize + getFieldFromHeader) into a single GET request.
+
+  This matters because:
+  1. Some servers (especially GitHub, CDNs) return different signed URLs on
+     each request, making the second request fail or return different data.
+  2. It halves network latency in the QR "Please wait..." dialog.
+  3. It avoids downloading the file body twice (both requests used GET).
+
+  Parameters:
+    src            - URL to probe
+    size           - receives Content-Length (0 if not sent by server)
+    content_disp   - buffer to receive Content-Disposition header value
+    content_disp_len - size of content_disp buffer
+
+  Returns 0 on success (even if server returns no Content-Length/CD header),
+  negative on network/connection failure.
+*/
+int getDownloadInfo(const char *src, uint64_t *size,
+                    char *content_disp, int content_disp_len) {
+  int res;
+  int statusCode;
+  int tmplId = -1, connId = -1, reqId = -1;
+
+  if (size)        *size = 0;
+  if (content_disp && content_disp_len > 0) content_disp[0] = '\0';
+
+  res = sceHttpCreateTemplate(VITASHELL_USER_AGENT, SCE_HTTP_VERSION_1_1, SCE_TRUE);
+  if (res < 0)
+    goto ERROR_EXIT;
+  tmplId = res;
+
+  res = sceHttpCreateConnectionWithURL(tmplId, src, SCE_TRUE);
+  if (res < 0)
+    goto ERROR_EXIT;
+  connId = res;
+
+  res = sceHttpCreateRequestWithURL(connId, SCE_HTTP_METHOD_GET, src, 0);
+  if (res < 0)
+    goto ERROR_EXIT;
+  reqId = res;
+
+  res = sceHttpSendRequest(reqId, NULL, 0);
+  if (res < 0)
+    goto ERROR_EXIT;
+
+  res = sceHttpGetStatusCode(reqId, &statusCode);
+  if (res < 0)
+    goto ERROR_EXIT;
+
+  if (statusCode == 200) {
+    /* Content-Length */
+    if (size) {
+      sceHttpGetResponseContentLength(reqId, size);
+      /* Ignore return — some servers omit Content-Length; treat as 0. */
+    }
+
+    /* Content-Disposition */
+    if (content_disp && content_disp_len > 0) {
+      char *header      = NULL;
+      unsigned int headerSize = 0;
+      if (sceHttpGetAllResponseHeaders(reqId, &header, &headerSize) >= 0) {
+        const char *cd_val  = NULL;
+        unsigned int cd_len = 0;
+        if (sceHttpParseResponseHeader(header, headerSize,
+                                       "Content-Disposition",
+                                       &cd_val, &cd_len) >= 0 && cd_val && cd_len > 0) {
+          int copy_len = (int)cd_len < content_disp_len - 1
+                           ? (int)cd_len
+                           : content_disp_len - 1;
+          strncpy(content_disp, cd_val, copy_len);
+          content_disp[copy_len] = '\0';
+        }
+      }
+    }
+    res = 0; /* success */
+  } else {
+    /* Non-200: treat as a network-level failure so QR fallback fires. */
+    res = -1;
+  }
+
+ERROR_EXIT:
+  if (reqId  >= 0) sceHttpDeleteRequest(reqId);
+  if (connId >= 0) sceHttpDeleteConnection(connId);
+  if (tmplId >= 0) sceHttpDeleteTemplate(tmplId);
+
+  return res;
+}
+
 int getDownloadFileSize(const char *src, uint64_t *size) {
   int res;
   int statusCode;
